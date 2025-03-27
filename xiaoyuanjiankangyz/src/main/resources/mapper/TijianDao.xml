@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.TijianDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.jiankangyizhan_id as jiankangyizhanId
+        ,a.tijian_name as tijianName
+        ,a.tijian_photo as tijianPhoto
+        ,a.tijian_types as tijianTypes
+        ,a.tijian_price as tijianPrice
+        ,a.tijian_clicknum as tijianClicknum
+        ,a.tijian_content as tijianContent
+        ,a.data_delete as dataDelete
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.TijianView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,jiankangyizhan.jiankangyizhan_name as jiankangyizhanName
+        ,jiankangyizhan.jiankangyizhan_photo as jiankangyizhanPhoto
+        ,jiankangyizhan.jiankangyizhan_address as jiankangyizhanAddress
+        ,jiankangyizhan.jiankangyizhan_fzr as jiankangyizhanFzr
+        ,jiankangyizhan.jiankangyizhan_phone as jiankangyizhanPhone
+        ,jiankangyizhan.jiankangyizhan_types as jiankangyizhanTypes
+        ,jiankangyizhan.jiankangyizhan_clicknum as jiankangyizhanClicknum
+        ,jiankangyizhan.jiankangyizhan_content as jiankangyizhanContent
+        ,jiankangyizhan.data_delete as dataDelete
+
+        FROM tijian  a
+        left JOIN jiankangyizhan jiankangyizhan ON a.jiankangyizhan_id = jiankangyizhan.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.jiankangyizhanId != null and params.jiankangyizhanId != ''">
+                and (
+                    a.jiankangyizhan_id = #{params.jiankangyizhanId}
+                )
+            </if>
+            <if test=" params.tijianName != '' and params.tijianName != null and params.tijianName != 'null' ">
+                and a.tijian_name like CONCAT('%',#{params.tijianName},'%')
+            </if>
+            <if test="params.tijianTypes != null and params.tijianTypes != ''">
+                and a.tijian_types = #{params.tijianTypes}
+            </if>
+            <if test="params.tijianPriceStart != null ">
+                <![CDATA[  and a.tijian_price >= #{params.tijianPriceStart}   ]]>
+            </if>
+            <if test="params.tijianPriceEnd != null ">
+                <![CDATA[  and a.tijian_price <= #{params.tijianPriceEnd}   ]]>
+            </if>
+            <if test="params.tijianPrice != null and params.tijianPrice != ''">
+                and a.tijian_price = #{params.tijianPrice}
+            </if>
+            <if test="params.tijianClicknumStart != null and params.tijianClicknumStart != ''">
+                <![CDATA[  and a.tijian_clicknum >= #{params.tijianClicknumStart}   ]]>
+            </if>
+            <if test="params.tijianClicknumEnd != null and params.tijianClicknumEnd != ''">
+                <![CDATA[  and a.tijian_clicknum <= #{params.tijianClicknumEnd}   ]]>
+            </if>
+             <if test="params.tijianClicknum != null and params.tijianClicknum != ''">
+                and a.tijian_clicknum = #{params.tijianClicknum}
+             </if>
+            <if test=" params.tijianContent != '' and params.tijianContent != null and params.tijianContent != 'null' ">
+                and a.tijian_content like CONCAT('%',#{params.tijianContent},'%')
+            </if>
+            <if test="params.dataDeleteStart != null and params.dataDeleteStart != ''">
+                <![CDATA[  and a.data_delete >= #{params.dataDeleteStart}   ]]>
+            </if>
+            <if test="params.dataDeleteEnd != null and params.dataDeleteEnd != ''">
+                <![CDATA[  and a.data_delete <= #{params.dataDeleteEnd}   ]]>
+            </if>
+             <if test="params.dataDelete != null and params.dataDelete != ''">
+                and a.data_delete = #{params.dataDelete}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断健康驿站的id不为空 -->
+            <if test=" params.jiankangyizhanIdNotNull != '' and params.jiankangyizhanIdNotNull != null and params.jiankangyizhanIdNotNull != 'null' ">
+                and a.jiankangyizhan_id IS NOT NULL
+            </if>
+            <if test=" params.jiankangyizhanName != '' and params.jiankangyizhanName != null and params.jiankangyizhanName != 'null' ">
+                and jiankangyizhan.jiankangyizhan_name like CONCAT('%',#{params.jiankangyizhanName},'%')
+            </if>
+            <if test=" params.jiankangyizhanAddress != '' and params.jiankangyizhanAddress != null and params.jiankangyizhanAddress != 'null' ">
+                and jiankangyizhan.jiankangyizhan_address like CONCAT('%',#{params.jiankangyizhanAddress},'%')
+            </if>
+            <if test=" params.jiankangyizhanFzr != '' and params.jiankangyizhanFzr != null and params.jiankangyizhanFzr != 'null' ">
+                and jiankangyizhan.jiankangyizhan_fzr like CONCAT('%',#{params.jiankangyizhanFzr},'%')
+            </if>
+            <if test=" params.jiankangyizhanPhone != '' and params.jiankangyizhanPhone != null and params.jiankangyizhanPhone != 'null' ">
+                and jiankangyizhan.jiankangyizhan_phone like CONCAT('%',#{params.jiankangyizhanPhone},'%')
+            </if>
+            <if test="params.jiankangyizhanTypes != null  and params.jiankangyizhanTypes != ''">
+                and jiankangyizhan.jiankangyizhan_types = #{params.jiankangyizhanTypes}
+            </if>
+
+            <if test="params.jiankangyizhanClicknumStart != null  and params.jiankangyizhanClicknumStart != '' ">
+                <![CDATA[  and jiankangyizhan.jiankangyizhan_clicknum >= #{params.jiankangyizhanClicknumStart}   ]]>
+            </if>
+            <if test="params.jiankangyizhanClicknumEnd != null  and params.jiankangyizhanClicknumEnd != '' ">
+                <![CDATA[  and jiankangyizhan.jiankangyizhan_clicknum <= #{params.jiankangyizhanClicknumEnd}   ]]>
+            </if>
+            <if test="params.jiankangyizhanClicknum != null  and params.jiankangyizhanClicknum != '' ">
+                and jiankangyizhan.jiankangyizhan_clicknum = #{params.jiankangyizhanClicknum}
+            </if>
+            <if test=" params.jiankangyizhanContent != '' and params.jiankangyizhanContent != null and params.jiankangyizhanContent != 'null' ">
+                and jiankangyizhan.jiankangyizhan_content like CONCAT('%',#{params.jiankangyizhanContent},'%')
+            </if>
+            <if test="params.dataDeleteStart != null  and params.dataDeleteStart != '' ">
+                <![CDATA[  and jiankangyizhan.data_delete >= #{params.dataDeleteStart}   ]]>
+            </if>
+            <if test="params.dataDeleteEnd != null  and params.dataDeleteEnd != '' ">
+                <![CDATA[  and jiankangyizhan.data_delete <= #{params.dataDeleteEnd}   ]]>
+            </if>
+            <if test="params.dataDelete != null  and params.dataDelete != '' ">
+                and jiankangyizhan.data_delete = #{params.dataDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(jiankangyizhan.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(jiankangyizhan.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
